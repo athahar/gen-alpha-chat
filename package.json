@@ -7,9 +7,14 @@
     "start": "node app.js"
   },
   "dependencies": {
+    "@pinecone-database/pinecone": "^6.1.0",
+    "@supabase/supabase-js": "^2.49.9",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
-    "openai": "^4.104.0"
+    "express-session": "^1.18.1",
+    "openai": "^4.104.0",
+    "pinecone-client": "^2.0.0",
+    "validator": "^13.15.15"
   },
   "keywords": [],
   "author": "",

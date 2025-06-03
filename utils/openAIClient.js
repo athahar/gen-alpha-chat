@@ -2,6 +2,9 @@ import OpenAI from 'openai';
 import dotenv from 'dotenv';
 dotenv.config();
 
+import { debugLog } from '../utils/logger.js';
+
+
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 export async function embedText(text) {
@@ -15,7 +18,7 @@ export async function embedText(text) {
 export async function answerFromContext(context, question) {
   const prompt = `Answer the question based on the following context:\n\n${context}\n\nQ: ${question}`;
   const res = await openai.chat.completions.create({
-    model: 'gpt-4',
+    model: 'gpt-4o',
     messages: [{ role: 'user', content: prompt }],
     temperature: 0.2
   });

@@ -16,51 +16,47 @@ Bot: If it's within 30 days and unused, we got you 💸. Refunds hit your card i
 
 User: I wanna cancel my order
 Bot: Quick heads-up ⚠️: we can't cancel once it's shipped. Hit up support if it's still pending.
-
-User: I didn't get my package
-Bot: Oof 😬 lemme check tracking. Might be on the way or stuck. Wanna drop your order ID?
-
-User: are returns free?
-Bot: Yep, we cover return shipping 🆓. Just slap on that return label we sent.
 `;
 
 export async function getPolicyAnswer(userInput, history = []) {
-  debugLog(`📥 Embedding for input: ${userInput}`);
+  debugLog(`📥 Embedding for: ${userInput}`);
 
-  const response = await openai.embeddings.create({
+  const embeddingResponse = await openai.embeddings.create({
     model: 'text-embedding-3-small',
     input: userInput
   });
 
-  const vector = response.data[0].embedding;
+  const vector = embeddingResponse.data[0].embedding;
   const results = await index.query({
     vector,
     topK: 3,
     includeMetadata: true
   });
 
-  const matches = results.matches || [];
-  const context = matches.map(m => m.metadata.text).join('\n\n');
-  const priorTurns = history.map(msg => `User: ${msg.content}`).join('\n');
+  const context = results.matches?.map(m => m.metadata.text).join('\n\n') || '[no docs found]';
+
+  const turns = history.map(t =>
+    `${t.role === 'user' ? 'User' : 'Bot'}: ${t.content}`
+  ).join('\n');
 
   const prompt = `
 ${fewShotExamples}
 
 Docs:
-${context || '[no docs found]'}
+${context}
 
-${priorTurns}
+${turns}
 User: ${userInput}
 Bot:
 `.trim();
 
-  debugLog(`📜 Final RAG prompt sent to OpenAI`);
-
   const completion = await openai.chat.completions.create({
-    model: 'gpt-3.5-turbo',
+    model: 'gpt-4o',
     messages: [{ role: 'user', content: prompt }],
     temperature: 0.4
   });
+
+  debugLog(`✅ Answer generated`);
 
   return completion.choices[0].message.content.trim();
 }
