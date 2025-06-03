@@ -1,0 +1,47 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Gen Alpha Feedback</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 2em; }
+    .card { border: 1px solid #ccc; padding: 1em; margin-bottom: 1em; }
+    .buttons { margin-top: 1em; }
+    button { margin-right: 1em; }
+  </style>
+</head>
+<body>
+  <h1>Gen Alpha Support Feedback</h1>
+  <div id="card" class="card">
+    <p><strong>Question:</strong> <span id="question"></span></p>
+    <p><strong>Answer:</strong> <span id="answer"></span></p>
+    <div class="buttons">
+      <button onclick="sendFeedback(true)">👍 Helpful</button>
+      <button onclick="sendFeedback(false)">👎 Not Helpful</button>
+    </div>
+  </div>
+  <script>
+    let current;
+
+    async function loadResponse() {
+      const res = await fetch('/response');
+      current = await res.json();
+      document.getElementById('question').innerText = current.question;
+      document.getElementById('answer').innerText = current.genAlphaReply;
+    }
+
+    async function sendFeedback(isHelpful) {
+      await fetch('/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...current, helpful: isHelpful })
+      });
+      alert("Feedback submitted. Loading next...");
+      loadResponse();
+    }
+
+    loadResponse();
+  </script>
+</body>
+</html>
