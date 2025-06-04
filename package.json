@@ -1,23 +1,38 @@
 {
-  "name": "genalpha-eval",
+  "name": "genalpha-feedback-ui",
   "version": "1.0.0",
+  "description": "Gen Alpha Feedback UI with agentic capabilities",
   "type": "module",
-  "main": "app.js",
   "scripts": {
-    "start": "node app.js"
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
+    "test:coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
+    "setup:db": "node agents/setup-db.js",
+    "verify:db": "node agents/verify-db.js",
+    "start": "node app.js",
+    "dev": "nodemon app.js"
   },
   "dependencies": {
     "@pinecone-database/pinecone": "^6.1.0",
-    "@supabase/supabase-js": "^2.49.9",
-    "dotenv": "^16.5.0",
+    "@supabase/supabase-js": "^2.39.3",
+    "dotenv": "^16.4.1",
     "express": "^5.1.0",
     "express-session": "^1.18.1",
-    "openai": "^4.104.0",
+    "langchain": "^0.3.27",
+    "node-cache": "^5.1.2",
+    "openai": "^4.28.0",
     "pinecone-client": "^2.0.0",
-    "validator": "^13.15.15"
+    "uuid": "^9.0.1",
+    "validator": "^13.15.15",
+    "winston": "^3.11.0",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "jest": "^29.7.0",
+    "nodemon": "^3.0.2"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
-  "description": ""
+  "license": "ISC"
 }
