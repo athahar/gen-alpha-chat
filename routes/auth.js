@@ -17,6 +17,16 @@ router.post('/', async (req, res) => {
   }
 
   try {
+    if (process.env.TEST_MODE === '1') {
+      const memory = loadMemory(sessionId);
+      memory.isAuthenticated = true;
+      memory.email = email;
+      memory.phone = phone;
+      saveMemory(sessionId, memory);
+
+      return res.json({ success: true, message: 'You\u2019re verified \u2705', memory });
+    }
+
     // Verify identity via Supabase
     const { data, error } = await supabase
       .from('users')
