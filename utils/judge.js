@@ -25,8 +25,13 @@ Respond ONLY with a raw JSON object:
   if (raw.startsWith("```")) {
     raw = raw.replace(/```json|```/g, "").trim();
   }
-
-  const result = JSON.parse(raw);
+  let result;
+  try {
+    result = JSON.parse(raw);
+  } catch (err) {
+    console.error("Failed to parse judge result", err, raw);
+    result = { helpfulness: null, tone: null, reason: "parse_error", raw };
+  }
   result.timestamp = new Date().toISOString();
   result.id = data.id;
   result.question = data.question;
