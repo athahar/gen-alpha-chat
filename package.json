@@ -4,7 +4,8 @@
   "type": "module",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js"
+    "start": "node app.js",
+    "test": "jest"
   },
   "dependencies": {
     "@pinecone-database/pinecone": "^6.1.0",

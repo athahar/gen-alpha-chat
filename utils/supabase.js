@@ -20,7 +20,7 @@ if (!supabaseUrl || !supabaseKey) {
   throw new Error('❌ Supabase URL and Service Role Key must be set in .env');
 }
 
-const supabase = createClient(supabaseUrl, supabaseKey);
+export const supabase = createClient(supabaseUrl, supabaseKey);
 
 export async function getOrderSummary(email, phone) {
   const { data } = await supabase
@@ -59,7 +59,7 @@ export async function getOrderStatus(orderId) {
     .single();
 
   if (error || !data) {
-    return "Hmm, couldn’t find that order right now 🕵️. Wanna double-check the ID?";
+    return "Hmm, couldn't find that order right now 🕵️. Wanna double-check the ID?";
   }
 
   const {
@@ -95,11 +95,11 @@ export async function getOrderStatus(orderId) {
 
   // 🛠️ Not shipped yet
   if (shipping_status === 'pending') {
-    return "Your order hasn’t shipped yet, but it's queued up 🛠️. I’ll ping you when it’s out the door.";
+    return "Your order hasn't shipped yet, but it's queued up 🛠️. I'll ping you when it's out the door.";
   }
 
   // 🌀 Unknown fallback
-  return "Hmm, not sure where your order’s at. Could be stuck in processing. Try again or ping support 🌀";
+  return "Hmm, not sure where your order's at. Could be stuck in processing. Try again or ping support 🌀";
 }
 
 export async function getReturnEligibility(orderId) {
@@ -112,7 +112,7 @@ export async function getReturnEligibility(orderId) {
       .single();
   
     if (error || !data) {
-      return "Hmm... couldn’t fetch that order right now 🛑";
+      return "Hmm... couldn't fetch that order right now 🛑";
     }
   
     const { status, delivered_at, refunded_at } = data;
@@ -133,7 +133,7 @@ export async function getReturnEligibility(orderId) {
     const diffDays = Math.floor((now - deliveredDate) / (1000 * 60 * 60 * 24));
   
     if (diffDays <= 30) {
-      return `✅ Yep, you're still within the return window (${30 - diffDays} days left). Here’s how to return it:\n`;
+      return `✅ Yep, you're still within the return window (${30 - diffDays} days left). Here's how to return it:\n`;
     } else {
       return `⏳ Oof, looks like the 30-day return window passed. Might wanna ping support to see if they can help.`;
     }
@@ -160,7 +160,7 @@ export async function getReturnEligibility(orderId) {
     }
   
     const policyText = await getPolicyAnswer("how long do refunds take", chatHistory);
-    return `Your refund hasn’t been issued yet, but here’s what the policy says:\n${policyText}`;
+    return `Your refund hasn't been issued yet, but here's what the policy says:\n${policyText}`;
   }
 
   export async function getShippingEstimate(orderId) {

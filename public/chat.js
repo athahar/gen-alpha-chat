@@ -1,52 +1,63 @@
-let verified = false;
-let email = '';
-let phone = '';
+const form = document.getElementById('chat-form');
+const input = document.getElementById('message-input');
+const messagesDiv = document.getElementById('messages');
 
-const chatBox = document.getElementById('chat-box');
-const chatInput = document.getElementById('chat-input');
-const sendBtn = document.getElementById('send-btn');
+let sessionId = localStorage.getItem('sessionId') || crypto.randomUUID();
+localStorage.setItem('sessionId', sessionId);
 
-chatInput.addEventListener('input', autoResize);
-sendBtn.addEventListener('click', sendMessage);
-chatInput.addEventListener('keypress', e => {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    sendMessage();
+function addMessage(text, role = 'bot') {
+  const div = document.createElement('div');
+  div.className = `message ${role}`;
+  div.textContent = text;
+  messagesDiv.appendChild(div);
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+form.addEventListener('submit', async (e) => {
+
+  e.preventDefault();
+  const message = input.value.trim();
+  if (!message) return;
+
+  addMessage(message, 'user');
+  input.value = '';
+
+  addMessage('...', 'bot');
+
+  try {
+
+    const res = await fetch('/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message, sessionId })
+    });
+    const data = await res.json();
+  
+    messagesDiv.lastChild.remove(); // remove '...'
+    addMessage(data.finalResponse, 'bot');
+  } catch (err) {
+    messagesDiv.lastChild.remove();
+    addMessage('⚠️ Error: failed to get response', 'bot');
+    console.error(err);
   }
+
 });
+
 
 window.addEventListener('DOMContentLoaded', () => {
-  sendMessage('');
-});
-
-function autoResize() {
-  chatInput.style.height = 'auto';
-  chatInput.style.height = chatInput.scrollHeight + 'px';
-}
-
-function addMessage(type, text) {
-  const msg = document.createElement('div');
-  msg.className = type;
-  msg.textContent = text;
-  chatBox.appendChild(msg);
-  chatBox.scrollTop = chatBox.scrollHeight;
-}
-
-async function sendMessage(inputText) {
-  const message = inputText !== undefined ? inputText : chatInput.value.trim();
-  if (message !== '') {
-    addMessage('user', message);
-    chatInput.value = '';
-    autoResize();
-  }
-
-  // Skip local logic, let backend decide
-  const response = await fetch('/chat', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message }),
+    console.log('🪄 Sending initial empty message for greeting');
+    fetch('/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: '', sessionId })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.finalResponse) {
+        addMessage(data.finalResponse, 'bot');
+      }
+    })
+    .catch(err => {
+      console.error('❌ Error loading greeting:', err);
+    });
   });
-
-  const result = await response.json();
-  addMessage('bot', result.answer);
-}

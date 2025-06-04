@@ -1,21 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Gen Alpha Support Bot</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gen Alpha Chatbot</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div id="chat-container">
-    <div id="chat-box">
-      <div class="bot">Hi there! You can ask me about returns, orders, or our policies. What’s your email to get started?</div>
-    </div>
-    <div id="input-section">
-      <textarea id="chat-input" rows="1" placeholder="Ask me anything..." autofocus></textarea>
-      <button id="send-btn">➤</button>
-    </div>
+    <div id="messages"></div>
+    <form id="chat-form">
+      <input type="text" id="message-input" autocomplete="off" placeholder="Ask me anything..." />
+      <button type="submit">Send</button>
+    </form>
   </div>
-
   <script src="chat.js"></script>
 </body>
 </html>
