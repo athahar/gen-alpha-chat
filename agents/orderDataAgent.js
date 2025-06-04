@@ -29,13 +29,15 @@ export async function orderDataAgent(message, memory) {
 
     debugLog(`✅ Order data retrieved (status: ${data.status})`);
 
+    const fmt = (d) => d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+
     return {
       ...memory,
       orderDetails: {
         status: data.status,
-        deliveryDate: data.delivery_date,
+        deliveryDate: fmt(data.delivery_date),
         refundStatus: data.refund_status,
-        refundDate: data.refund_date,
+        refundDate: fmt(data.refund_date),
         totalPrice: data.total_price_cents
       }
     };

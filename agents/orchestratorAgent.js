@@ -37,6 +37,7 @@ export async function orchestratorAgent(message, memory) {
   try {
     debugLog('🚀 Starting orchestration flow');
     debugLog(`📝 User message: "${message}"`);
+    debugLog('🧠 Memory before:', JSON.stringify(memory));
 
     // Show greeting if this is the first message and no intent is set
     if ((!message || message.trim() === '') && !memory.currentIntent && !memory.greeted) {
@@ -60,7 +61,10 @@ export async function orchestratorAgent(message, memory) {
 
     // 1. Validate input
     debugLog('🔒 Running guardrails check');
-    await guardrailsAgent(message, memory);
+    const guard = await guardrailsAgent(message, memory);
+    message = guard.sanitizedMessage;
+    memory = guard.memory;
+    debugLog('🛡️ After guardrails:', JSON.stringify(memory));
 
     // 2. Detect intent
     debugLog('🎯 Detecting user intent');
@@ -91,6 +95,7 @@ export async function orchestratorAgent(message, memory) {
     memory = await conversationAgent(message, memory);
 
     debugLog('✅ Orchestration flow completed');
+    debugLog('🧠 Memory after:', JSON.stringify(memory));
     return memory;
   } catch (err) {
     debugLog(`❌ Orchestration error: ${err.message}`);

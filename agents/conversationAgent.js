@@ -11,14 +11,17 @@ import { debugLog } from '../utils/logger.js';
 export async function conversationAgent(message, memory) {
   debugLog('💬 Starting response generation');
   try {
-    const context = `
-You are a Gen Alpha support bot. Be brief, helpful, emoji-friendly.
+    const intent = memory.currentIntent || 'unknown';
+    const reasoning = memory.reasoning || 'No reasoning available';
+    const orderDetails = JSON.stringify(memory.orderDetails || {}, null, 2);
+    const policy = memory.policyAnswer || 'N/A';
 
-User intent: ${memory.currentIntent}
-Reasoning: ${memory.reasoning}
-Order details: ${JSON.stringify(memory.orderDetails || {}, null, 2)}
-Policy answer: ${memory.policyAnswer || 'N/A'}
-    `.trim();
+    const context = `You are a Gen Alpha support bot. Be brief, helpful, emoji-friendly.
+
+Intent: ${intent}
+Reasoning: ${reasoning}
+Order: ${orderDetails}
+Policy: ${policy}`;
 
     debugLog('🤖 Sending request to OpenAI');
     const response = await openai.chat.completions.create({
@@ -33,10 +36,13 @@ Policy answer: ${memory.policyAnswer || 'N/A'}
     const reply = response.choices?.[0]?.message?.content;
     debugLog('✅ Response generated successfully');
 
-    return {
-      ...memory,
-      finalResponse: reply
-    };
+    if (reply) {
+      return {
+        ...memory,
+        finalResponse: reply
+      };
+    }
+    return { ...memory };
   } catch (err) {
     debugLog(`❌ Response generation error: ${err.message}`);
     console.error('[conversationAgent] Error:', err);

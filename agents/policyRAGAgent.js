@@ -18,12 +18,9 @@ export async function policyRAGAgent(message, memory) {
     
     // Lower threshold to 0.3 since we're using text-embedding-3-small
     if (!topResult || typeof topResult.score !== 'number' || topResult.score < 0.3) {
-        debugLog(`ℹ️ No relevant policy found (score: ${topResult?.score})`);
-        return {
-          ...memory,
-          policyAnswer: "I couldn't find specific information about that in our policies. Would you like me to help you with something else?"
-        };
-      }
+      debugLog(`ℹ️ No relevant policy found (score: ${topResult?.score})`);
+      return memory; // do not set policyAnswer
+    }
 
     debugLog(`✅ Found relevant policy (score: ${topResult.score})`);
     
